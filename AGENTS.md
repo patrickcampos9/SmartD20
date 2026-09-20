@@ -1,6 +1,6 @@
 # Regras do projeto SmartD20
 
-Estas regras se aplicam a todo o repositório.
+Estas regras são obrigatórias e se aplicam a todo o repositório. Nenhuma alteração pode ser considerada concluída ou enviada ao repositório enquanto houver violação conhecida. Exceções exigem uma decisão explícita, documentada e aprovada pelo responsável pelo projeto.
 
 ## Objetivo e escopo
 
@@ -21,6 +21,25 @@ Mantenha a separação MVC adotada pelo projeto:
 As Views não devem acessar Bluetooth, armazenamento ou APIs de plataforma diretamente. Controllers não devem conhecer controles visuais. Integrações devem ser expostas por interfaces e registradas em `MauiProgram`.
 
 Não substitua MVC por MVVM, mensageria ou outra arquitetura sem uma decisão explícita do projeto.
+
+### SOLID e extensibilidade
+
+A arquitetura deve permanecer simples, mas todo código novo deve seguir SOLID:
+
+- **Responsabilidade única:** cada classe e método deve ter um motivo claro para mudar.
+- **Aberto/fechado:** novos relógios e protocolos devem ser adicionados por novas implementações, sem alterar fluxos estáveis desnecessariamente.
+- **Substituição de Liskov:** implementações reais e simuladas devem respeitar integralmente os contratos que implementam.
+- **Segregação de interfaces:** contratos devem ser pequenos e específicos; não crie interfaces extensas que obriguem implementações a depender de operações que não usam.
+- **Inversão de dependência:** Controllers devem depender de abstrações, e implementações concretas devem ser conectadas pela injeção de dependências.
+
+O nome D20 não deve ficar incorporado em componentes genéricos de transporte, descoberta ou persistência. Detalhes específicos de cada família de relógio devem ficar em implementações próprias, permitindo que outros modelos sejam adicionados no futuro.
+
+### Reutilização e ausência de duplicidade
+
+- Não duplique regras de negócio, validações, conversões, constantes, comandos de protocolo ou fluxos de tratamento de erro.
+- Ao identificar comportamento repetido, extraia uma abstração pequena e bem nomeada no nível adequado.
+- Não crie uma abstração apenas por semelhança visual ou coincidência momentânea; a extração deve representar o mesmo conceito e comportamento.
+- Antes de concluir uma mudança, pesquise implementações equivalentes e elimine duplicações introduzidas ou encontradas na área alterada.
 
 ## Bluetooth e protocolo D20
 
@@ -61,6 +80,18 @@ Não substitua MVC por MVVM, mensageria ou outra arquitetura sem uma decisão ex
 
 ## Compilação e validação
 
+### Testes unitários obrigatórios
+
+- Todo método criado deve ter testes unitários que comprovem seu comportamento.
+- Todo método alterado deve ter seus testes atualizados ou ampliados para cobrir a mudança.
+- Os testes devem cobrir o caminho esperado, limites, falhas e cancelamento quando aplicáveis.
+- Métodos de interface, ciclo de vida ou integração de plataforma devem apenas encaminhar chamadas. A lógica deve ser extraída para uma classe testável e coberta por testes unitários.
+- Código que acessa BLE, relógio, armazenamento ou APIs Android deve depender de abstrações que permitam testes com dublês.
+- Correções de defeitos devem incluir um teste que falhe sem a correção.
+- Não aceite testes que apenas repitam a implementação ou verifiquem propriedades triviais sem comportamento.
+
+Todos os testes unitários devem passar antes do commit. Se ainda não existir um projeto de testes adequado, ele deve ser criado como parte da primeira alteração de código que exigir novos métodos.
+
 Para mudanças comuns, valide pelo menos o destino Android:
 
 ```powershell
@@ -75,7 +106,7 @@ dotnet build D20Mobile/D20Mobile.csproj -f net10.0-windows10.0.19041.0
 
 O Fast Deployment está desativado no Debug Android por causa do erro `XA0129` observado em dispositivo físico. Não remova `EmbedAssembliesIntoApk` sem validar repetidas implantações no aparelho.
 
-Adicione testes quando houver lógica determinística relevante, principalmente codec de protocolo, checksum, fragmentação ou transformação de medições. Não crie testes que apenas repitam propriedades triviais.
+Codec de protocolo, checksum, fragmentação e transformação de medições exigem cobertura completa dos casos conhecidos e inválidos.
 
 ## Documentação e Git
 
@@ -89,10 +120,12 @@ Adicione testes quando houver lógica determinística relevante, principalmente 
 
 Uma mudança está concluída quando:
 
-1. Respeita a separação MVC e os limites de plataforma.
-2. Compila nos destinos afetados.
-3. Trata os estados de erro relevantes.
-4. Mantém o simulador funcional quando não depende exclusivamente de hardware.
-5. Atualiza a documentação afetada.
-6. Não inclui artefatos gerados ou informações sensíveis.
-
+1. Respeita MVC, SOLID e os limites de plataforma.
+2. Não introduz duplicidade de código ou regras.
+3. Possui testes unitários para todos os métodos criados ou alterados.
+4. Todos os testes passam.
+5. Compila nos destinos afetados.
+6. Trata os estados de erro relevantes.
+7. Mantém o simulador funcional quando não depende exclusivamente de hardware.
+8. Atualiza a documentação afetada.
+9. Não inclui artefatos gerados ou informações sensíveis.

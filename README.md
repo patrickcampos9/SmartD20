@@ -46,7 +46,7 @@ Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE
 
 ## Documentação e regras
 
-- [AGENTS.md](AGENTS.md): regras obrigatórias de arquitetura, código, BLE, validação e documentação.
+- [AGENTS.md](AGENTS.md): regras obrigatórias de arquitetura MVC, SOLID, testes unitários, ausência de duplicidade, BLE, validação e documentação.
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md): preparação do ambiente, fluxo de trabalho e diagnóstico.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): responsabilidades das camadas e evolução prevista.
 - [docs/D20_PROTOCOL.md](docs/D20_PROTOCOL.md): registro das descobertas feitas no hardware.

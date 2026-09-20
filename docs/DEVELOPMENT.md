@@ -12,11 +12,16 @@ Abra `D20Mobile.slnx`, selecione o projeto `D20Mobile` e escolha o dispositivo d
 
 1. Confirme que a branch local está atualizada e sem alterações inesperadas.
 2. Faça a mudança na camada responsável pelo comportamento.
-3. Use o serviço simulado para validar fluxos independentes do relógio.
-4. Compile os destinos afetados.
-5. Execute no Android quando houver mudança em inicialização, XAML ou integração de plataforma.
-6. Atualize a documentação relacionada.
-7. Revise os arquivos antes do commit para evitar artefatos e dados locais.
+3. Crie ou atualize os testes unitários de cada método criado ou alterado.
+4. Procure lógica equivalente e elimine duplicações.
+5. Use o serviço simulado para validar fluxos independentes do relógio.
+6. Execute todos os testes unitários.
+7. Compile os destinos afetados.
+8. Execute no Android quando houver mudança em inicialização, XAML ou integração de plataforma.
+9. Atualize a documentação relacionada.
+10. Revise os arquivos antes do commit para evitar artefatos e dados locais.
+
+Uma mudança que não cumpra as regras de `AGENTS.md` não deve ser enviada ao repositório. Se um método depender diretamente da interface ou de uma API de plataforma, extraia sua lógica para um componente injetável e testável antes de concluir a implementação.
 
 ## Como adicionar a comunicação BLE real
 
@@ -61,11 +66,14 @@ Consulte primeiro a exceção completa no Logcat. Mensagens posteriores, como av
 
 ## Checklist antes de enviar alterações
 
+- [ ] Todos os métodos criados ou alterados possuem testes unitários adequados.
+- [ ] Todos os testes passam.
 - [ ] A mudança pertence à camada correta.
+- [ ] A implementação segue SOLID e depende de abstrações nos limites externos.
+- [ ] Não há regras, validações, constantes ou fluxos duplicados.
 - [ ] O fluxo simulado continua funcionando.
 - [ ] Os destinos afetados compilam sem erros.
 - [ ] Erros e cancelamentos têm comportamento visível.
 - [ ] Nenhum protocolo não confirmado foi tratado como definitivo.
 - [ ] README e documentos técnicos estão atualizados.
 - [ ] `git status` não contém artefatos, credenciais ou arquivos locais.
-
