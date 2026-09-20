@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET build outputs
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+[Tt]est[Rr]esults/
+*.binlog
+
+# Android build artifacts and local configuration
+*.apk
+*.aab
+local.properties
+
+# Signing keys and certificates
+*.keystore
+*.jks
+*.pfx
+*.p12
+
+# IDEs and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local secrets
+secrets.json
+appsettings.*.local.json
