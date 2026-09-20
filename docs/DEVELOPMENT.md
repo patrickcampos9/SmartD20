@@ -8,6 +8,14 @@ Instale o Visual Studio com a carga de trabalho .NET MAUI, o SDK do .NET 10 e o 
 
 Abra `D20Mobile.slnx`, selecione o projeto `D20Mobile` e escolha o dispositivo de destino.
 
+Execute a suíte unitária com:
+
+```powershell
+dotnet test D20Mobile.Tests/D20Mobile.Tests.csproj
+```
+
+Avisos de compilação são tratados como erros em todos os projetos. O GitHub executa a mesma suíte automaticamente em pushes e pull requests direcionados à branch `main`.
+
 ## Fluxo de desenvolvimento
 
 1. Confirme que a branch local está atualizada e sem alterações inesperadas.
@@ -25,7 +33,7 @@ Uma mudança que não cumpra as regras de `AGENTS.md` não deve ser enviada ao r
 
 ## Como adicionar a comunicação BLE real
 
-A implementação real deve cumprir `ID20ConnectionService`. O primeiro incremento deverá apenas:
+A implementação real deve cumprir `IWatchConnectionService`. O primeiro incremento deverá apenas:
 
 1. Solicitar as permissões necessárias.
 2. Verificar se Bluetooth está disponível e ligado.

@@ -1,6 +1,6 @@
 namespace D20Mobile.Models;
 
-public sealed record D20Device(
+public sealed record WatchDevice(
     string Id,
     string Name,
     int SignalStrength,

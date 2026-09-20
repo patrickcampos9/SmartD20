@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using D20Mobile.Controllers;
 using D20Mobile.Models;
 
@@ -7,26 +6,20 @@ namespace D20Mobile.Views;
 public partial class MainPage : ContentPage
 {
     private readonly HomeController _controller;
-    private readonly ObservableCollection<D20Device> _devices = [];
 
     public MainPage(HomeController controller)
     {
         InitializeComponent();
         _controller = controller;
-        DevicesList.ItemsSource = _devices;
+        DevicesList.ItemsSource = _controller.Model.Devices;
         Render();
     }
 
     private async void OnScanClicked(object? sender, EventArgs e)
     {
-        RenderBusy("Procurando dispositivos próximos...");
-        await _controller.ScanAsync();
-
-        _devices.Clear();
-        foreach (var device in _controller.Model.Devices)
-        {
-            _devices.Add(device);
-        }
+        var scan = _controller.ScanAsync();
+        Render();
+        await scan;
 
         DevicesList.SelectedItem = null;
         Render();
@@ -34,33 +27,26 @@ public partial class MainPage : ContentPage
 
     private void OnDeviceSelected(object? sender, SelectionChangedEventArgs e)
     {
-        _controller.SelectDevice(e.CurrentSelection.FirstOrDefault() as D20Device);
+        _controller.SelectDevice(e.CurrentSelection.FirstOrDefault() as WatchDevice);
         Render();
     }
 
     private async void OnConnectionClicked(object? sender, EventArgs e)
     {
+        Task operation;
+
         if (_controller.Model.ConnectedDevice is null)
         {
-            RenderBusy("Conectando...");
-            await _controller.ConnectAsync();
+            operation = _controller.ConnectAsync();
         }
         else
         {
-            RenderBusy("Desconectando...");
-            await _controller.DisconnectAsync();
+            operation = _controller.DisconnectAsync();
         }
 
         Render();
-    }
-
-    private void RenderBusy(string message)
-    {
-        BusyIndicator.IsVisible = true;
-        BusyIndicator.IsRunning = true;
-        StatusLabel.Text = message;
-        ScanButton.IsEnabled = false;
-        ConnectionButton.IsEnabled = false;
+        await operation;
+        Render();
     }
 
     private void Render()

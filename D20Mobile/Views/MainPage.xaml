@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:D20Mobile.Models"
+             xmlns:models="clr-namespace:D20Mobile.Models;assembly=SmartD20.Core"
              x:Class="D20Mobile.Views.MainPage"
-             Title="D20">
+             Title="SmartD20">
 
     <Grid RowDefinitions="Auto,Auto,*,Auto"
           Padding="24"
           RowSpacing="18">
         <VerticalStackLayout Grid.Row="0" Spacing="4">
-            <Label Text="D20 Mobile"
+            <Label Text="SmartD20"
                    FontSize="30"
                    FontAttributes="Bold"
                    SemanticProperties.HeadingLevel="Level1" />
@@ -41,7 +41,7 @@
                             SelectionChanged="OnDeviceSelected"
                             EmptyView="Toque em Procurar para iniciar uma busca simulada.">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:D20Device">
+                    <DataTemplate x:DataType="models:WatchDevice">
                         <Border Margin="0,4" Padding="14" StrokeShape="RoundRectangle 12">
                             <Grid RowDefinitions="Auto,Auto"
                                   ColumnDefinitions="*,Auto"

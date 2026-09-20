@@ -11,6 +11,8 @@ O projeto está sendo desenvolvido inicialmente para Android. A primeira versão
 - Seleção, conexão e desconexão simuladas.
 - Interface preparada para apresentar estado e erros de conexão.
 - Injeção de dependências configurada.
+- Núcleo independente de plataforma com cobertura unitária integral.
+- Testes automáticos configurados para pushes e pull requests.
 - Compilação validada para Android e Windows.
 
 Ainda não há comunicação Bluetooth real, interpretação do protocolo D20 ou armazenamento de histórico.
@@ -37,10 +39,11 @@ Interface de serviço
 Simulador ou transporte BLE real
 ```
 
-- `Models`: dados do dispositivo e estado da tela.
-- `Views`: interface e encaminhamento das ações do usuário.
-- `Controllers`: coordenação dos fluxos da aplicação.
-- `Services`: comunicação simulada e, futuramente, Bluetooth real.
+- `SmartD20.Core/Models`: dados do dispositivo e estado da tela.
+- `D20Mobile/Views`: interface e encaminhamento das ações do usuário.
+- `SmartD20.Core/Controllers`: coordenação dos fluxos da aplicação.
+- `SmartD20.Core/Services`: contratos, comunicação simulada e, futuramente, Bluetooth real.
+- `D20Mobile.Tests`: testes unitários do núcleo independente de plataforma.
 
 Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -50,6 +53,7 @@ Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md): preparação do ambiente, fluxo de trabalho e diagnóstico.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): responsabilidades das camadas e evolução prevista.
 - [docs/D20_PROTOCOL.md](docs/D20_PROTOCOL.md): registro das descobertas feitas no hardware.
+- [docs/QUALITY_AUDIT.md](docs/QUALITY_AUDIT.md): resultado da revisão de conformidade e cobertura.
 
 ## Pré-requisitos
 
@@ -73,6 +77,12 @@ Também é possível validar a compilação pela linha de comando:
 dotnet build D20Mobile/D20Mobile.csproj -f net10.0-android
 ```
 
+Execute os testes unitários antes de cada commit:
+
+```powershell
+dotnet test D20Mobile.Tests/D20Mobile.Tests.csproj
+```
+
 ## Testando sem o relógio
 
 Na tela inicial:
@@ -82,7 +92,7 @@ Na tela inicial:
 3. Toque em **Conectar**.
 4. Confira a mudança de estado e depois toque em **Desconectar**.
 
-O serviço utilizado nesse fluxo é `SimulatedD20ConnectionService`. Quando o relógio estiver disponível, uma implementação BLE de `ID20ConnectionService` poderá substituí-lo sem alterar a tela ou o controlador.
+O serviço utilizado nesse fluxo é `SimulatedWatchConnectionService`. Quando o relógio estiver disponível, uma implementação BLE de `IWatchConnectionService` poderá substituí-lo sem alterar a tela ou o controlador.
 
 ## Implantação Android
 

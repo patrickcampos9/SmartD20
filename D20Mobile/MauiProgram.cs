@@ -15,7 +15,7 @@ namespace D20Mobile
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton<Services.ID20ConnectionService, Services.SimulatedD20ConnectionService>();
+            builder.Services.AddSingleton<Services.IWatchConnectionService, Services.SimulatedWatchConnectionService>();
             builder.Services.AddSingleton<Controllers.HomeController>();
             builder.Services.AddSingleton<Views.MainPage>();
             builder.Services.AddSingleton<AppShell>();

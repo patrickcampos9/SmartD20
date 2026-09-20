@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="SmartD20.Core/SmartD20.Core.csproj" />
   <Project Path="D20Mobile/D20Mobile.csproj" />
+  <Project Path="D20Mobile.Tests/D20Mobile.Tests.csproj" />
 </Solution>

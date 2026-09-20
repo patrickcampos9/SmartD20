@@ -28,7 +28,7 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
 		<!-- Display name -->
-		<ApplicationTitle>D20Mobile</ApplicationTitle>
+		<ApplicationTitle>SmartD20</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.d20mobile</ApplicationId>
@@ -73,6 +73,10 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SmartD20.Core\SmartD20.Core.csproj" />
 	</ItemGroup>
 
 </Project>

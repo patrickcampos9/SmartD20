@@ -6,13 +6,19 @@ A arquitetura foi mantida pequena para facilitar o aprendizado, a depuração no
 
 Mesmo enxuta, a implementação deve seguir SOLID. O MVC organiza as responsabilidades principais; interfaces pequenas, injeção de dependências e componentes especializados permitem ampliar o aplicativo sem concentrar regras em Controllers ou Views.
 
+O repositório possui três projetos:
+
+- `SmartD20.Core`: Models, Controllers e Services independentes de plataforma.
+- `D20Mobile`: aplicativo .NET MAUI, Views e composição de dependências.
+- `D20Mobile.Tests`: testes unitários do núcleo.
+
 ## Componentes
 
 ### Models
 
 Representam os dados manipulados pelo aplicativo.
 
-- `D20Device`: identificação, nome, intensidade do sinal e origem real ou simulada.
+- `WatchDevice`: identificação, nome, intensidade do sinal e origem real ou simulada.
 - `HomeScreenModel`: dispositivos encontrados, seleção atual, conexão e mensagem de estado.
 
 ### Views
@@ -27,7 +33,7 @@ Coordenam cada ação da tela. `HomeController` controla os estados de busca, se
 
 ### Services
 
-`ID20ConnectionService` define o contrato de comunicação. A implementação atual, `SimulatedD20ConnectionService`, retorna dispositivos fictícios e simula o tempo das operações.
+`IWatchConnectionService` define o contrato de comunicação sem depender de um modelo específico. A implementação atual, `SimulatedWatchConnectionService`, retorna dispositivos fictícios e simula o tempo das operações.
 
 A implementação BLE real deverá cumprir o mesmo contrato. Dessa forma, a troca será feita no registro de dependências em `MauiProgram`, sem alterar a View.
 

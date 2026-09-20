@@ -43,7 +43,7 @@ O nome D20 não deve ficar incorporado em componentes genéricos de transporte, 
 
 ## Bluetooth e protocolo D20
 
-- Preserve `ID20ConnectionService` como limite entre aplicação e transporte.
+- Preserve `IWatchConnectionService` como limite neutro entre aplicação e transporte.
 - Mantenha uma implementação simulada utilizável enquanto o hardware não estiver disponível.
 - Coloque a montagem e interpretação de pacotes em C# puro, separada do transporte BLE.
 - Execute operações GATT de forma sequencial e aceite `CancellationToken` em operações assíncronas.
