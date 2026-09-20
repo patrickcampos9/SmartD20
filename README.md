@@ -1,4 +1,4 @@
-# D20 Mobile
+# SmartD20
 
 Aplicativo experimental em .NET MAUI para comunicação com relógios inteligentes comercializados como D20.
 
@@ -43,6 +43,13 @@ Simulador ou transporte BLE real
 - `Services`: comunicação simulada e, futuramente, Bluetooth real.
 
 Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Documentação e regras
+
+- [AGENTS.md](AGENTS.md): regras obrigatórias de arquitetura, código, BLE, validação e documentação.
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md): preparação do ambiente, fluxo de trabalho e diagnóstico.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): responsabilidades das camadas e evolução prevista.
+- [docs/D20_PROTOCOL.md](docs/D20_PROTOCOL.md): registro das descobertas feitas no hardware.
 
 ## Pré-requisitos
 
@@ -101,4 +108,3 @@ O levantamento do protocolo será mantido em [docs/D20_PROTOCOL.md](docs/D20_PRO
 “D20” é usado como nome comercial por diferentes fabricantes e revisões de hardware. Relógios visualmente iguais podem expor serviços GATT e comandos diferentes. Nenhum UUID ou pacote deve ser tratado como confirmado antes de ser observado no dispositivo utilizado nos testes.
 
 As medições apresentadas por esse tipo de relógio são voltadas a acompanhamento pessoal e não devem ser usadas para diagnóstico médico.
-
