@@ -33,9 +33,9 @@ Coordenam cada ação da tela. `HomeController` controla os estados de busca, se
 
 ### Services
 
-`IWatchConnectionService` define o contrato de comunicação sem depender de um modelo específico. A implementação atual, `SimulatedWatchConnectionService`, retorna dispositivos fictícios e simula o tempo das operações.
+`IWatchConnectionService` define o contrato de comunicação sem depender de um modelo específico. No Android, `BluetoothWatchConnectionService` usa `IBluetoothLowEnergyTransport`, implementado pelo adaptador nativo `AndroidBluetoothLowEnergyTransport`. Nos demais destinos, `SimulatedWatchConnectionService` retorna dispositivos fictícios e simula o tempo das operações.
 
-A implementação BLE real deverá cumprir o mesmo contrato. Dessa forma, a troca será feita no registro de dependências em `MauiProgram`, sem alterar a View.
+Essa composição é selecionada no registro de dependências em `MauiProgram`, sem alterar a View ou o Controller.
 
 ## Suporte a outros relógios
 
@@ -55,13 +55,16 @@ Os serviços, o controlador, a View e o `AppShell` são registrados no contêine
 
 ## Evolução prevista
 
-Quando a comunicação real for adicionada, o serviço BLE será responsável por:
+O transporte Android já é responsável por:
 
 1. Solicitar e validar permissões do Android.
 2. Buscar dispositivos próximos.
 3. Abrir e encerrar a conexão GATT.
-4. Descobrir serviços e características.
-5. Executar leituras e escritas de forma sequencial.
-6. Encaminhar notificações recebidas para o controlador.
+
+Os próximos incrementos serão responsáveis por:
+
+1. Descobrir serviços e características.
+2. Executar leituras e escritas de forma sequencial.
+3. Encaminhar notificações recebidas para o controlador.
 
 A montagem e interpretação dos pacotes do relógio deverá ficar em um componente separado do transporte BLE. Isso permitirá testar o protocolo apenas com sequências de bytes conhecidas.

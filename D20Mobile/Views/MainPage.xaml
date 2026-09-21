@@ -39,7 +39,7 @@
                             Grid.Row="1"
                             SelectionMode="Single"
                             SelectionChanged="OnDeviceSelected"
-                            EmptyView="Toque em Procurar para iniciar uma busca simulada.">
+                            EmptyView="Toque em Procurar para buscar dispositivos Bluetooth próximos.">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:WatchDevice">
                         <Border Margin="0,4" Padding="14" StrokeShape="RoundRectangle 12">

@@ -31,17 +31,19 @@ Avisos de compilação são tratados como erros em todos os projetos. O GitHub e
 
 Uma mudança que não cumpra as regras de `AGENTS.md` não deve ser enviada ao repositório. Se um método depender diretamente da interface ou de uma API de plataforma, extraia sua lógica para um componente injetável e testável antes de concluir a implementação.
 
-## Como adicionar a comunicação BLE real
+## Comunicação BLE no Android
 
-A implementação real deve cumprir `IWatchConnectionService`. O primeiro incremento deverá apenas:
+O primeiro incremento real está implementado por `AndroidBluetoothLowEnergyTransport` e permite:
 
 1. Solicitar as permissões necessárias.
 2. Verificar se Bluetooth está disponível e ligado.
 3. Buscar periféricos BLE.
 4. Retornar os dispositivos encontrados para o controlador.
-5. Permitir conexão e desconexão sem ainda enviar comandos proprietários.
+5. Abrir e encerrar uma conexão GATT sem enviar comandos proprietários.
 
-A descoberta de serviços e características deve ser apresentada em uma área de diagnóstico. Comandos do relógio só devem ser adicionados depois de confirmados e registrados em `D20_PROTOCOL.md`.
+A descoberta de serviços e características será o próximo incremento e deverá ser apresentada em uma área de diagnóstico. Comandos do relógio só devem ser adicionados depois de confirmados e registrados em `D20_PROTOCOL.md`.
+
+Não force vínculo com `CreateBond`. Uma conexão GATT não exige necessariamente que o periférico apareça na lista de dispositivos pareados do Android. O vínculo só deve ser solicitado quando uma característica confirmada exigir autenticação.
 
 ## Tratamento de estado
 

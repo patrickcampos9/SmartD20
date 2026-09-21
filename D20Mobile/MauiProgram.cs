@@ -15,7 +15,12 @@ namespace D20Mobile
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+#if ANDROID
+            builder.Services.AddSingleton<Services.IBluetoothLowEnergyTransport, Platforms.Android.AndroidBluetoothLowEnergyTransport>();
+            builder.Services.AddSingleton<Services.IWatchConnectionService, Services.BluetoothWatchConnectionService>();
+#else
             builder.Services.AddSingleton<Services.IWatchConnectionService, Services.SimulatedWatchConnectionService>();
+#endif
             builder.Services.AddSingleton<Controllers.HomeController>();
             builder.Services.AddSingleton<Views.MainPage>();
             builder.Services.AddSingleton<AppShell>();

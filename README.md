@@ -2,20 +2,21 @@
 
 Aplicativo experimental em .NET MAUI para comunicação com relógios inteligentes comercializados como D20.
 
-O projeto está sendo desenvolvido inicialmente para Android. A primeira versão utiliza um dispositivo simulado, permitindo construir e validar a interface, o fluxo de conexão e a arquitetura antes de termos acesso ao relógio físico e ao seu protocolo Bluetooth Low Energy (BLE).
+O projeto está sendo desenvolvido inicialmente para Android. A versão atual busca periféricos Bluetooth Low Energy (BLE) próximos e abre conexões GATT reais, permitindo validar a infraestrutura antes de termos acesso ao relógio físico e ao protocolo específico dele. Uma implementação simulada continua disponível para testes e outros destinos.
 
 ## Estado atual
 
 - Estrutura simples baseada em MVC.
-- Busca simulada de dispositivos próximos.
-- Seleção, conexão e desconexão simuladas.
+- Busca real de periféricos Bluetooth Low Energy no Android.
+- Seleção, conexão e desconexão GATT no Android.
+- Implementação simulada preservada para desenvolvimento e outros destinos.
 - Interface preparada para apresentar estado e erros de conexão.
 - Injeção de dependências configurada.
 - Núcleo independente de plataforma com cobertura unitária integral.
 - Testes automáticos configurados para pushes e pull requests.
 - Compilação validada para Android e Windows.
 
-Ainda não há comunicação Bluetooth real, interpretação do protocolo D20 ou armazenamento de histórico.
+Ainda não há descoberta de serviços GATT, interpretação do protocolo D20 ou armazenamento de histórico.
 
 ## Tecnologias
 
@@ -42,7 +43,7 @@ Simulador ou transporte BLE real
 - `SmartD20.Core/Models`: dados do dispositivo e estado da tela.
 - `D20Mobile/Views`: interface e encaminhamento das ações do usuário.
 - `SmartD20.Core/Controllers`: coordenação dos fluxos da aplicação.
-- `SmartD20.Core/Services`: contratos, comunicação simulada e, futuramente, Bluetooth real.
+- `SmartD20.Core/Services`: contratos, coordenação do transporte BLE e comunicação simulada.
 - `D20Mobile.Tests`: testes unitários do núcleo independente de plataforma.
 
 Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -85,14 +86,18 @@ dotnet test D20Mobile.Tests/D20Mobile.Tests.csproj
 
 ## Testando sem o relógio
 
-Na tela inicial:
+No Android, a tela já permite validar a infraestrutura Bluetooth com qualquer periférico BLE próximo:
 
 1. Toque em **Procurar**.
-2. Selecione o **D20 de demonstração**.
-3. Toque em **Conectar**.
-4. Confira a mudança de estado e depois toque em **Desconectar**.
+2. Autorize o acesso a dispositivos próximos quando o Android solicitar.
+3. Confira os dispositivos encontrados e a intensidade do sinal.
+4. Selecione um dispositivo BLE.
+5. Toque em **Conectar** para abrir uma conexão GATT.
+6. Confira a mudança de estado e depois toque em **Desconectar**.
 
-O serviço utilizado nesse fluxo é `SimulatedWatchConnectionService`. Quando o relógio estiver disponível, uma implementação BLE de `IWatchConnectionService` poderá substituí-lo sem alterar a tela ou o controlador.
+O Android utiliza `AndroidBluetoothLowEnergyTransport` por meio de `BluetoothWatchConnectionService`. Os demais destinos continuam usando `SimulatedWatchConnectionService`, que também permanece disponível para testes.
+
+Conectar por GATT não significa criar um vínculo permanente na lista de aparelhos pareados do Android. Muitos relógios BLE não exigem pareamento. O aplicativo só deverá solicitar vínculo quando uma operação confirmada do relógio exigir autenticação.
 
 ## Implantação Android
 
@@ -102,9 +107,6 @@ Por isso, as DLLs são incorporadas ao APK de depuração. A implantação pode 
 
 ## Próximas etapas
 
-- Configurar as permissões Bluetooth exigidas pelo Android.
-- Implementar busca BLE real.
-- Conectar e desconectar de um dispositivo GATT.
 - Exibir serviços, características e propriedades encontradas.
 - Criar um registro hexadecimal das mensagens enviadas e recebidas.
 - Identificar o protocolo específico do relógio com auxílio do nRF Connect.
