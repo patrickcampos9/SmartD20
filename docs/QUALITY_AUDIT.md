@@ -15,7 +15,7 @@ O código de aplicação atende às regras atuais de arquitetura, SOLID, ausênc
 | Ausência de duplicidade | Atende | A coleção do Model é a única fonte dos dispositivos e o tratamento assíncrono comum foi centralizado no Controller. |
 | Operações concorrentes | Atende | O Controller ignora novos comandos enquanto existe uma operação em andamento. |
 | Cancelamento e falhas | Atende | Busca, conexão e desconexão tratam cancelamento e exceções, restaurando o estado de atividade. |
-| Testes unitários | Atende | 49 testes aprovados, com 100% de linhas e ramificações no `SmartD20.Core`. |
+| Testes unitários | Atende | 87 testes aprovados, com 100% de linhas e ramificações no `SmartD20.Core`. |
 | Automação | Atende | O workflow `tests.yml` executa a suíte em pushes e pull requests para `main`. |
 | Avisos de compilação | Atende | `Directory.Build.props` promove avisos a erros em todos os projetos. |
 
@@ -32,12 +32,15 @@ O código de aplicação atende às regras atuais de arquitetura, SOLID, ausênc
 - Inclusão dos projetos de núcleo e testes na solução.
 - Implementação da busca BLE e conexão GATT nativas no Android.
 - Extração da coleta de resultados e do estado da conexão para componentes C# testáveis.
+- Inclusão da tela de diagnóstico e da descoberta de serviços e características GATT.
 
 ## Validação executada
 
 ```text
-Testes: 49 aprovados, 0 falhas, 0 ignorados
+Testes: 87 aprovados, 0 falhas, 0 ignorados
 Cobertura do SmartD20.Core: 100% de linhas e 100% de ramificações
 Android: compilação concluída com 0 avisos e 0 erros
-Windows: compilação concluída com 0 avisos e 0 erros
+Android Release: compilação concluída com 0 avisos e 0 erros
 ```
+
+A compilação Windows desta revisão não foi repetida porque o acesso necessário ao SDK local não foi autorizado. A tela e o núcleo compartilhado foram compilados pelo destino Android, e o serviço simulado permanece coberto por testes unitários.

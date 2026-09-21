@@ -31,9 +31,15 @@ Contêm o XAML e o mínimo de código necessário para receber eventos da interf
 
 Coordenam cada ação da tela. `HomeController` controla os estados de busca, seleção, conexão, desconexão e tratamento de falhas.
 
+`GattDiagnosticsController` coordena a descoberta e apresentação de serviços e características sem conhecer APIs Android ou controles visuais.
+
 ### Services
 
 `IWatchConnectionService` define o contrato de comunicação sem depender de um modelo específico. No Android, `BluetoothWatchConnectionService` usa `IBluetoothLowEnergyTransport`, implementado pelo adaptador nativo `AndroidBluetoothLowEnergyTransport`. Nos demais destinos, `SimulatedWatchConnectionService` retorna dispositivos fictícios e simula o tempo das operações.
+
+`IGattDiagnosticsService` mantém a inspeção GATT separada da conexão principal. No Android, ele usa `IGattServiceDiscoveryTransport`; nos demais destinos, `SimulatedGattDiagnosticsService` fornece uma árvore conhecida para desenvolvimento da interface.
+
+Em Debug Android, `DevelopmentWatchService` combina dispositivos reais e simulados e direciona conexão e diagnóstico conforme a origem selecionada. Essa composição não é registrada em Release.
 
 Essa composição é selecionada no registro de dependências em `MauiProgram`, sem alterar a View ou o Controller.
 
@@ -60,11 +66,11 @@ O transporte Android já é responsável por:
 1. Solicitar e validar permissões do Android.
 2. Buscar dispositivos próximos.
 3. Abrir e encerrar a conexão GATT.
+4. Descobrir serviços, características, UUIDs e propriedades.
 
 Os próximos incrementos serão responsáveis por:
 
-1. Descobrir serviços e características.
-2. Executar leituras e escritas de forma sequencial.
-3. Encaminhar notificações recebidas para o controlador.
+1. Executar leituras e escritas de forma sequencial.
+2. Encaminhar notificações recebidas para o controlador.
 
 A montagem e interpretação dos pacotes do relógio deverá ficar em um componente separado do transporte BLE. Isso permitirá testar o protocolo apenas com sequências de bytes conhecidas.

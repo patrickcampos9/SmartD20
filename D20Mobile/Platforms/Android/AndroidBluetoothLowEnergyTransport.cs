@@ -8,11 +8,14 @@ using Microsoft.Maui.ApplicationModel;
 
 namespace D20Mobile.Platforms.Android;
 
-public sealed class AndroidBluetoothLowEnergyTransport : IBluetoothLowEnergyTransport
+public sealed class AndroidBluetoothLowEnergyTransport :
+    IBluetoothLowEnergyTransport,
+    IGattServiceDiscoveryTransport
 {
     private static readonly TimeSpan ScanDuration = TimeSpan.FromSeconds(8);
     private static readonly TimeSpan ConnectionTimeout = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan DisconnectionTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan ServiceDiscoveryTimeout = TimeSpan.FromSeconds(12);
 
     private readonly Context _context = global::Android.App.Application.Context;
     private readonly SemaphoreSlim _operationLock = new(1, 1);
@@ -131,6 +134,52 @@ public sealed class AndroidBluetoothLowEnergyTransport : IBluetoothLowEnergyTran
         }
     }
 
+    public async Task<IReadOnlyList<GattServiceInfo>> DiscoverServicesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await EnsurePermissionAsync();
+        await _operationLock.WaitAsync(cancellationToken);
+
+        try
+        {
+            if (_connectedGatt is null || _connectionCallback is null)
+            {
+                throw new InvalidOperationException(
+                    "Conecte um dispositivo antes de descobrir os serviços GATT.");
+            }
+
+            var discovery = _connectionCallback.BeginServiceDiscovery();
+
+            if (!_connectedGatt.DiscoverServices())
+            {
+                _connectionCallback.ReportServiceDiscoveryFailure(
+                    new InvalidOperationException(
+                        "O dispositivo não aceitou a descoberta de serviços GATT."));
+            }
+
+            try
+            {
+                return await discovery.WaitAsync(ServiceDiscoveryTimeout, cancellationToken);
+            }
+            catch (TimeoutException exception)
+            {
+                _connectionCallback.AbandonServiceDiscovery();
+                throw new TimeoutException(
+                    "O dispositivo não respondeu à descoberta de serviços GATT.",
+                    exception);
+            }
+            catch (OperationCanceledException)
+            {
+                _connectionCallback.AbandonServiceDiscovery();
+                throw;
+            }
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
     private static async Task EnsurePermissionAsync()
     {
         var status = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
@@ -228,10 +277,44 @@ public sealed class AndroidBluetoothLowEnergyTransport : IBluetoothLowEnergyTran
     private sealed class GattConnectionCallback : BluetoothGattCallback
     {
         private readonly BluetoothConnectionCompletion _completion = new();
+        private readonly object _discoveryLock = new();
+        private TaskCompletionSource<IReadOnlyList<GattServiceInfo>>? _serviceDiscovery;
 
         public Task Connected => _completion.Connected;
 
         public Task Disconnected => _completion.Disconnected;
+
+        public Task<IReadOnlyList<GattServiceInfo>> BeginServiceDiscovery()
+        {
+            lock (_discoveryLock)
+            {
+                if (_serviceDiscovery is { Task.IsCompleted: false })
+                {
+                    throw new InvalidOperationException(
+                        "Já existe uma descoberta de serviços GATT em andamento.");
+                }
+
+                _serviceDiscovery = new TaskCompletionSource<IReadOnlyList<GattServiceInfo>>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                return _serviceDiscovery.Task;
+            }
+        }
+
+        public void ReportServiceDiscoveryFailure(Exception exception)
+        {
+            lock (_discoveryLock)
+            {
+                _serviceDiscovery?.TrySetException(exception);
+            }
+        }
+
+        public void AbandonServiceDiscovery()
+        {
+            lock (_discoveryLock)
+            {
+                _serviceDiscovery = null;
+            }
+        }
 
         public override void OnConnectionStateChange(
             BluetoothGatt? gatt,
@@ -255,6 +338,89 @@ public sealed class AndroidBluetoothLowEnergyTransport : IBluetoothLowEnergyTran
             if (newState == ProfileState.Disconnected)
             {
                 _completion.ReportDisconnected();
+                ReportServiceDiscoveryFailure(
+                    new InvalidOperationException(
+                        "O dispositivo desconectou durante a descoberta de serviços."));
+            }
+        }
+
+        public override void OnServicesDiscovered(BluetoothGatt? gatt, GattStatus status)
+        {
+            TaskCompletionSource<IReadOnlyList<GattServiceInfo>>? discovery;
+
+            lock (_discoveryLock)
+            {
+                discovery = _serviceDiscovery;
+            }
+
+            if (discovery is null)
+            {
+                return;
+            }
+
+            if (status != GattStatus.Success || gatt is null)
+            {
+                discovery.TrySetException(
+                    new InvalidOperationException(
+                        $"A descoberta de serviços GATT falhou ({status})."));
+                return;
+            }
+
+            var services = (gatt.Services ?? [])
+                .Select(MapService)
+                .OrderBy(service => service.Name, StringComparer.CurrentCultureIgnoreCase)
+                .ToArray();
+            discovery.TrySetResult(services);
+        }
+
+        private static GattServiceInfo MapService(BluetoothGattService service)
+        {
+            var uuid = service.Uuid?.ToString() ?? "UUID indisponível";
+            var characteristics = (service.Characteristics ?? [])
+                .Select(MapCharacteristic)
+                .OrderBy(characteristic => characteristic.Name, StringComparer.CurrentCultureIgnoreCase)
+                .ToArray();
+
+            return new GattServiceInfo(
+                uuid,
+                GattUuidNameResolver.GetServiceName(uuid),
+                service.Type == GattServiceType.Primary,
+                characteristics);
+        }
+
+        private static GattCharacteristicInfo MapCharacteristic(
+            BluetoothGattCharacteristic characteristic)
+        {
+            var uuid = characteristic.Uuid?.ToString() ?? "UUID indisponível";
+            return new GattCharacteristicInfo(
+                uuid,
+                GattUuidNameResolver.GetCharacteristicName(uuid),
+                MapProperties(characteristic.Properties));
+        }
+
+        private static GattCharacteristicProperties MapProperties(GattProperty properties)
+        {
+            var result = GattCharacteristicProperties.None;
+
+            AddIfPresent(GattProperty.Broadcast, GattCharacteristicProperties.Broadcast);
+            AddIfPresent(GattProperty.Read, GattCharacteristicProperties.Read);
+            AddIfPresent(GattProperty.WriteNoResponse, GattCharacteristicProperties.WriteWithoutResponse);
+            AddIfPresent(GattProperty.Write, GattCharacteristicProperties.Write);
+            AddIfPresent(GattProperty.Notify, GattCharacteristicProperties.Notify);
+            AddIfPresent(GattProperty.Indicate, GattCharacteristicProperties.Indicate);
+            AddIfPresent(GattProperty.SignedWrite, GattCharacteristicProperties.AuthenticatedSignedWrites);
+            AddIfPresent(GattProperty.ExtendedProps, GattCharacteristicProperties.ExtendedProperties);
+
+            return result;
+
+            void AddIfPresent(
+                GattProperty androidProperty,
+                GattCharacteristicProperties mappedProperty)
+            {
+                if (properties.HasFlag(androidProperty))
+                {
+                    result |= mappedProperty;
+                }
             }
         }
     }

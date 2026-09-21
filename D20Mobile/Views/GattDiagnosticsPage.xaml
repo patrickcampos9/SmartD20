@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:D20Mobile.Models;assembly=SmartD20.Core"
+             x:Class="D20Mobile.Views.GattDiagnosticsPage"
+             Title="Diagnóstico GATT">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto"
+          Padding="20"
+          RowSpacing="14">
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="Serviços GATT"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   SemanticProperties.HeadingLevel="Level1" />
+            <Label x:Name="DeviceNameLabel"
+                   FontSize="16"
+                   TextColor="{AppThemeBinding Light=#404040, Dark=#ACACAC}" />
+        </VerticalStackLayout>
+
+        <Border Grid.Row="1" Padding="14" StrokeShape="RoundRectangle 14">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                <ActivityIndicator x:Name="BusyIndicator"
+                                   IsRunning="False"
+                                   IsVisible="False"
+                                   WidthRequest="24" />
+                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                    <Label x:Name="StatusLabel" LineBreakMode="WordWrap" />
+                    <Label Text="Inspeção segura: nenhuma leitura ou escrita é executada nesta tela."
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light=#6E6E6E, Dark=#ACACAC}" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <CollectionView x:Name="ServicesList"
+                        Grid.Row="2"
+                        SelectionMode="None"
+                        EmptyView="Conecte um dispositivo e toque em Atualizar serviços.">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:GattServiceInfo">
+                    <Border Margin="0,5"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 14">
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <Label Text="{Binding Name}"
+                                       FontSize="17"
+                                       FontAttributes="Bold" />
+                                <Border Grid.Column="1"
+                                        Padding="8,3"
+                                        StrokeShape="RoundRectangle 10"
+                                        BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#404040}">
+                                    <Label Text="{Binding TypeText}"
+                                           FontSize="10" />
+                                </Border>
+                            </Grid>
+
+                            <Label Text="{Binding Uuid}"
+                                   FontFamily="monospace"
+                                   FontSize="11"
+                                   LineBreakMode="CharacterWrap"
+                                   TextColor="{AppThemeBinding Light=#6E6E6E, Dark=#ACACAC}" />
+
+                            <BoxView HeightRequest="1"
+                                     Color="{AppThemeBinding Light=#E1E1E1, Dark=#404040}" />
+
+                            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Characteristics}"
+                                                 Spacing="10">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:GattCharacteristicInfo">
+                                        <Grid RowDefinitions="Auto,Auto,Auto"
+                                              ColumnDefinitions="18,*"
+                                              ColumnSpacing="8">
+                                            <Label Text="↳"
+                                                   FontSize="14"
+                                                   TextColor="{AppThemeBinding Light=#6E6E6E, Dark=#ACACAC}" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   FontAttributes="Bold" />
+                                            <Label Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   Text="{Binding Uuid}"
+                                                   FontFamily="monospace"
+                                                   FontSize="10"
+                                                   LineBreakMode="CharacterWrap"
+                                                   TextColor="{AppThemeBinding Light=#6E6E6E, Dark=#ACACAC}" />
+                                            <Label Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   Text="{Binding PropertyText}"
+                                                   FontSize="10"
+                                                   TextColor="{AppThemeBinding Light=#512BD4, Dark=#AC99EA}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button x:Name="RefreshButton"
+                Grid.Row="3"
+                Text="Atualizar serviços"
+                Clicked="OnRefreshClicked" />
+    </Grid>
+</ContentPage>

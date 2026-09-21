@@ -14,7 +14,7 @@ Este documento registrará apenas informações observadas no relógio usado pel
 
 ## Serviços e características GATT
 
-Preencher após a inspeção com nRF Connect.
+Preencher após a inspeção com a tela de diagnóstico do SmartD20 e confirmar os resultados com o nRF Connect.
 
 | Serviço | Característica | Propriedades | Finalidade confirmada |
 | --- | --- | --- | --- |
@@ -36,4 +36,3 @@ Preencher após a inspeção com nRF Connect.
 6. Reproduzir inicialmente apenas operações de leitura sem risco.
 
 Não enviar pacotes para características relacionadas a OTA ou firmware durante a investigação inicial.
-

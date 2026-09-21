@@ -40,8 +40,9 @@ O primeiro incremento real está implementado por `AndroidBluetoothLowEnergyTran
 3. Buscar periféricos BLE.
 4. Retornar os dispositivos encontrados para o controlador.
 5. Abrir e encerrar uma conexão GATT sem enviar comandos proprietários.
+6. Descobrir e exibir serviços, características, UUIDs e propriedades.
 
-A descoberta de serviços e características será o próximo incremento e deverá ser apresentada em uma área de diagnóstico. Comandos do relógio só devem ser adicionados depois de confirmados e registrados em `D20_PROTOCOL.md`.
+A tela `GattDiagnosticsPage` é somente de inspeção. Ela não lê valores, ativa notificações nem escreve em características. Comandos do relógio só devem ser adicionados depois de confirmados e registrados em `D20_PROTOCOL.md`.
 
 Não force vínculo com `CreateBond`. Uma conexão GATT não exige necessariamente que o periférico apareça na lista de dispositivos pareados do Android. O vínculo só deve ser solicitado quando uma característica confirmada exigir autenticação.
 

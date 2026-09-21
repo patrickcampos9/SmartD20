@@ -9,6 +9,7 @@ O projeto está sendo desenvolvido inicialmente para Android. A versão atual bu
 - Estrutura simples baseada em MVC.
 - Busca real de periféricos Bluetooth Low Energy no Android.
 - Seleção, conexão e desconexão GATT no Android.
+- Tela de diagnóstico com serviços, características, UUIDs e propriedades GATT.
 - Implementação simulada preservada para desenvolvimento e outros destinos.
 - Interface preparada para apresentar estado e erros de conexão.
 - Injeção de dependências configurada.
@@ -54,6 +55,7 @@ Uma descrição mais detalhada está em [docs/ARCHITECTURE.md](docs/ARCHITECTURE
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md): preparação do ambiente, fluxo de trabalho e diagnóstico.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): responsabilidades das camadas e evolução prevista.
 - [docs/D20_PROTOCOL.md](docs/D20_PROTOCOL.md): registro das descobertas feitas no hardware.
+- [docs/GATT_DIAGNOSTICS.md](docs/GATT_DIAGNOSTICS.md): referências e funcionamento da tela de inspeção BLE.
 - [docs/QUALITY_AUDIT.md](docs/QUALITY_AUDIT.md): resultado da revisão de conformidade e cobertura.
 
 ## Pré-requisitos
@@ -93,9 +95,11 @@ No Android, a tela já permite validar a infraestrutura Bluetooth com qualquer p
 3. Confira os dispositivos encontrados e a intensidade do sinal.
 4. Selecione um dispositivo BLE.
 5. Toque em **Conectar** para abrir uma conexão GATT.
-6. Confira a mudança de estado e depois toque em **Desconectar**.
+6. Toque em **Explorar serviços GATT** para abrir o diagnóstico.
+7. Confira os serviços e características encontrados.
+8. Volte à tela inicial e toque em **Desconectar**.
 
-O Android utiliza `AndroidBluetoothLowEnergyTransport` por meio de `BluetoothWatchConnectionService`. Os demais destinos continuam usando `SimulatedWatchConnectionService`, que também permanece disponível para testes.
+O Android utiliza `AndroidBluetoothLowEnergyTransport` por meio de `BluetoothWatchConnectionService`. Em Debug, os resultados reais incluem o **D20 de demonstração**, permitindo abrir a tela GATT com dados conhecidos sem o relógio. Builds Release usam somente Bluetooth real. Os demais destinos continuam usando `SimulatedWatchConnectionService`.
 
 Conectar por GATT não significa criar um vínculo permanente na lista de aparelhos pareados do Android. Muitos relógios BLE não exigem pareamento. O aplicativo só deverá solicitar vínculo quando uma operação confirmada do relógio exigir autenticação.
 
@@ -107,7 +111,6 @@ Por isso, as DLLs são incorporadas ao APK de depuração. A implantação pode 
 
 ## Próximas etapas
 
-- Exibir serviços, características e propriedades encontradas.
 - Criar um registro hexadecimal das mensagens enviadas e recebidas.
 - Identificar o protocolo específico do relógio com auxílio do nRF Connect.
 - Implementar comandos confirmados, como consulta de bateria e sincronização.
